@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mic Locker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor"/>
+          <path d="M5 11a7 7 0 0 0 14 0h-2a5 5 0 0 1-10 0H5z" fill="currentColor"/>
+          <rect x="11" y="18" width="2" height="3" fill="currentColor"/>
+          <rect x="8" y="21" width="8" height="1.6" rx="0.8" fill="currentColor"/>
+        </svg>
+      </span>
+      <div>
+        <h1>MIC<span>LOCKER</span></h1>
+        <p class="brand-caption" data-i18n="brandCaption">PERSONAL AUDIO CONTROL</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <label class="language-control">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span class="sr-only" data-i18n="language">ภาษา</span>
+        <select id="language-select" class="input language-select" data-i18n-aria="language" aria-label="ภาษา">
+          <option value="en" lang="en">English</option>
+          <option value="th" lang="th" selected>ภาษาไทย</option>
+        </select>
+      </label>
+      <button id="btn-hide" class="btn btn-ghost" type="button" data-i18n-title="hideTitle" title="ซ่อนหน้าต่างและทำงานต่อใน System tray">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span data-i18n="hide">ซ่อนลง Tray</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="browser-banner" class="banner" data-i18n="browserBanner" hidden>
+    เปิดผ่านแอป Mic Locker เพื่อเชื่อมต่อไมโครโฟน
+  </div>
+  <div id="toast" class="toast" role="alert" aria-live="assertive" hidden></div>
+
+  <main class="workspace">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow" data-i18n="eyebrow">AUDIO / CONTROL CENTER</p>
+        <h2><span data-i18n="heading">เสียงของคุณ</span> <span data-i18n="headingTail">คุณควบคุมเอง</span></h2>
+      </div>
+      <span id="hw-status" class="chip chip-dim">ไม่มีไมโครโฟน</span>
+    </div>
+
+    <div class="layout">
+      <section class="console card" aria-labelledby="console-title">
+        <div class="section-heading">
+          <div><span class="section-index">01</span><h3 id="console-title" data-i18n="consoleTitle">ควบคุมไมโครโฟน</h3></div>
+          <span class="micro-label" data-i18n="inputLevel">INPUT LEVEL</span>
+        </div>
+
+        <div class="device-row">
+          <span class="device-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M5 11a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="1.6"/><path d="M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <label class="field device-field">
+            <span class="sr-only" data-i18n="chooseDevice">เลือกไมโครโฟน</span>
+            <select id="device-select" class="input" data-i18n-aria="chooseDevice" aria-label="เลือกไมโครโฟน"></select>
+          </label>
+          <button id="btn-refresh" class="btn icon-btn" type="button" data-i18n-aria="refresh" data-i18n-title="refresh" aria-label="รีเฟรชอุปกรณ์" title="รีเฟรชอุปกรณ์">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <div class="instrument">
+          <div class="ring-wrap">
+            <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
+              <circle class="ring-ticks" cx="100" cy="100" r="96"/>
+              <circle class="ring-inner" cx="100" cy="100" r="69"/>
+              <circle class="ring-bg" cx="100" cy="100" r="84"/>
+              <circle id="ring-fg" class="ring-fg" cx="100" cy="100" r="84"/>
+            </svg>
+            <div class="ring-center">
+              <span class="micro-label" data-i18n="currentLevel">CURRENT LEVEL</span>
+              <div class="reading"><span id="volume-figure" class="volume-figure">--</span><span class="unit">%</span></div>
+              <span class="volume-unit" data-i18n="currentCaption">ระดับเสียงปัจจุบัน</span>
+            </div>
+          </div>
+          <div class="meter-info">
+            <div class="target-readout">
+              <span class="micro-label" data-i18n="target">TARGET / เป้าหมาย</span>
+              <strong id="target-figure">75%</strong>
+            </div>
+            <div class="peak-section">
+              <div class="meter-row"><span class="label" data-i18n="signal">สัญญาณเข้า</span><span class="micro-label" data-i18n="peak">PEAK</span></div>
+              <div class="peak-bar" aria-hidden="true"><div id="peak-fill" class="peak-fill"></div></div>
+            </div>
+            <div class="meter-row compact">
+              <span class="label" data-i18n="audioState">สถานะเสียง</span>
+              <span id="mute-label" class="value">--</span>
+            </div>
+            <div class="meter-row compact">
+              <span class="label" data-i18n="restored">ปรับกลับแล้ว</span>
+              <span id="restorations" class="value">0 ครั้ง</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="level-controls">
+          <div class="meter-row">
+            <label for="volume-slider" class="control-label" data-i18n="targetVolume">ระดับเสียงเป้าหมาย</label>
+            <span id="slider-value" class="slider-value">75%</span>
+          </div>
+          <input id="volume-slider" class="slider" type="range" min="0" max="100" step="1" value="75" data-i18n-aria="targetVolume" aria-label="ระดับเสียงเป้าหมาย">
+          <div class="range-labels" aria-hidden="true"><span>0</span><span>50</span><span>100</span></div>
+          <div class="presets" role="group" data-i18n-aria="presets" aria-label="ค่าที่ตั้งไว้ล่วงหน้า">
+            <span class="micro-label" data-i18n="quickSet">QUICK SET</span>
+            <button class="btn btn-preset" type="button" data-preset="30">30%</button>
+            <button class="btn btn-preset" type="button" data-preset="50">50%</button>
+            <button class="btn btn-preset" type="button" data-preset="75">75%</button>
+            <button class="btn btn-preset" type="button" data-preset="100">100%</button>
+          </div>
+        </div>
+
+        <button id="lock-toggle" class="switch" role="switch" aria-checked="false" type="button">
+          <span class="lock-symbol" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="15" r="1.6" fill="currentColor"/></svg>
+          </span>
+          <span class="switch-copy">
+            <strong data-i18n="lockVolume">ล็อคระดับเสียง</strong>
+            <span id="lock-toggle-label">ปิดการล็อค</span>
+          </span>
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </button>
+      </section>
+
+      <aside class="col-side">
+        <section class="card preferences" aria-labelledby="preferences-title">
+          <div class="section-heading">
+            <div><span class="section-index">02</span><h3 id="preferences-title" data-i18n="preferencesTitle">การทำงาน</h3></div>
+            <span class="micro-label" data-i18n="preferences">PREFERENCES</span>
+          </div>
+          <label class="check-row">
+            <span class="setting-copy"><strong data-i18n="background">ทำงานเบื้องหลัง</strong><small data-i18n="backgroundHelp">ปิดหน้าต่างแล้วย่อลง System tray</small></span>
+            <input id="opt-close-tray" type="checkbox" class="toggle-input" data-i18n-aria="backgroundHelp" aria-label="ปิดหน้าต่างแล้วย่อลง System tray">
+          </label>
+          <label class="check-row">
+            <span class="setting-copy"><strong data-i18n="startHidden">เริ่มแบบเงียบ</strong><small data-i18n="startHiddenHelp">ซ่อนหน้าต่างเมื่อเปิดโปรแกรม</small></span>
+            <input id="opt-start-hidden" type="checkbox" class="toggle-input" data-i18n-aria="startHiddenHelp" aria-label="เริ่มโปรแกรมแบบซ่อนหน้าต่าง">
+          </label>
+          <label class="check-row">
+            <span class="setting-copy"><strong data-i18n="startup">เปิดพร้อม Windows</strong><small data-i18n="startupHelp">เริ่มอัตโนมัติเมื่อเข้า Windows</small></span>
+            <input id="opt-startup" type="checkbox" class="toggle-input" data-i18n-aria="startupHelp" aria-label="เปิดพร้อม Windows">
+          </label>
+          <label class="field interval-field">
+            <span class="label" data-i18n="interval">ช่วงเวลาตรวจสอบ</span>
+            <select id="interval-select" class="input" data-i18n-aria="interval" aria-label="ช่วงเวลาตรวจสอบ">
+              <option value="100" data-i18n="interval100">ทุก 100 มิลลิวินาที</option>
+              <option value="250" data-i18n="interval250">ทุก 250 มิลลิวินาที</option>
+              <option value="500" data-i18n="interval500">ทุก 500 มิลลิวินาที</option>
+              <option value="1000" data-i18n="interval1000">ทุก 1 วินาที</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="card status-card" aria-labelledby="status-title">
+          <div class="section-heading">
+            <div><span class="section-index">03</span><h3 id="status-title" data-i18n="deviceTitle">อุปกรณ์ที่เชื่อมต่อ</h3></div>
+          </div>
+          <span id="conn-label" class="connection-label">--</span>
+          <p id="active-device" class="device-name">--</p>
+          <div id="error-box" class="error-box" role="status" hidden></div>
+          <div class="privacy-note">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span><span data-i18n="privacy">ประมวลผลบนเครื่องเท่านั้น</span><br><small data-i18n="privacyDetail">ไม่บันทึกเสียง ไม่ส่งข้อมูลออก</small></span>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="info-strip">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 11v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>
+      <p><span data-i18n="lockHelp">เมื่อล็อค แอปจะปรับระดับกลับหากโปรแกรมอื่นเปลี่ยนค่า</span> <span data-i18n="agcHelp">การปรับเสียงอัตโนมัติ (AGC) ภายในบางแอปต้องปิดแยก</span></p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span><span class="footer-square" aria-hidden="true"></span><span data-i18n="footerPrivacy"> LOCAL FIRST / NO RECORDING</span></span>
+    <span>MIC LOCKER <span class="footer-separator">/</span> <span data-i18n="footerAudio">WINDOWS AUDIO</span></span>
+  </footer>
+</div>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
