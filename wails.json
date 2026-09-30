@@ -1,0 +1,18 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "Mic Locker",
+  "outputfilename": "MicLocker.exe",
+  "frontend:dir": "frontend",
+  "frontend:install": "",
+  "frontend:build": "",
+  "author": {
+    "name": "Mic Locker"
+  },
+  "info": {
+    "productName": "Mic Locker",
+    "productVersion": "1.0.0",
+    "companyName": "Mic Locker",
+    "copyright": "Mic Locker",
+    "comments": "Locks the Windows microphone volume at a chosen level. Local only."
+  }
+}
